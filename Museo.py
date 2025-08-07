@@ -1,4 +1,5 @@
 from Nacionalidad import Nacionalidad
+from Departamento import Departamento
 
 class Museo:
     def __init__(self,db):
@@ -17,10 +18,16 @@ class Museo:
                             
         --> """)
             
-            if menu == "2":
+            if menu == "1":
                 print()
-                for nacionalidad in self.nationality:
-                    nacionalidad.show()
+                Departamento.search()
+
+            elif menu == "2":
+                print()
+                Nacionalidad.search()
+
+            elif menu == "3":
+                print()
 
             else:
                 print()
@@ -28,8 +35,9 @@ class Museo:
 
 
     def load_data(self):
-        nationality_list = self.db["Nationality"]
+
+        self.objects = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
+        self.searchs = "https://collectionapi.metmuseum.org/public/collection/v1/search"
+        self.departments = "https://collectionapi.metmuseum.org/public/collection/v1/departments"
 
         self.nationality = []
-
-        self.nationality.append(Nacionalidad(nationality_list))
