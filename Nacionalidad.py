@@ -1,33 +1,33 @@
+from utils import utils
+from PIL import Image
 from db import db
 import requests
-import time
-from utils import guardar_y_mostrar_imagen
-
 
 class Nacionalidad:
-    def __init__(self, nationality):
-        self.nationality = nationality
 
-    def search(self):
+    def search():
         objects_link = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
         search_link = "https://collectionapi.metmuseum.org/public/collection/v1/search"
 
-        print("Nacionalidades disponibles:")
-        for i, nac in enumerate(self.nationality):
-            print(f"{i+1}. {nac}")
-
         while True:
-            try:
-                nationality_input_index = int(
-                    input("\nIntroduzca el número de la nacionalidad: \n--> ")) - 1
-                if 0 <= nationality_input_index < len(self.nationality):
-                    nationality_input = self.nationality[nationality_input_index]
-                    break
-                else:
-                    print(
-                        "Opción inválida. Por favor, introduzca un número de la lista.")
-            except ValueError:
-                print("Entrada inválida. Por favor, introduzca un número.")
+            print("""
+Nacionalidades:
+""")
+
+            for nationality in db:
+                print(f"    {nationality}")
+
+            print()
+
+            nationality_input = input("""Introduzca la nacionalidad:
+        --> """)
+
+            if nationality_input not in db:
+                print()
+                print("Introduzca una nacionalidad valida")
+
+            else:
+                break
 
         params = {
             "q": nationality_input,
@@ -35,80 +35,165 @@ class Nacionalidad:
         }
 
         try:
-            data = requests.get(search_link, params=params)
-            data.raise_for_status()
+            data = requests.get(search_link,params=params)
             data = data.json()
 
             print()
-            print(f"{data.get('total', 0)} objetos encontrados")
+            print(f"{data['total']} objetos encontrados")
 
-            if data.get('objectIDs'):
-                objects = data['objectIDs']
-                filtered_objects_data = []
+            objects = []
 
-                print("Obras encontradas (filtrando por nacionalidad):")
-                for object_id in objects:
-                    try:
-                        object_link = f"{objects_link}/{object_id}"
-                        object_data = requests.get(object_link)
-                        object_data.raise_for_status()
-                        object_data = object_data.json()
+            for id in data["objectIDs"]:
+                objects.append(id)
 
-                        if object_data.get("artistNationality") and nationality_input.lower() in object_data.get("artistNationality", "").lower():
-                            filtered_objects_data.append(object_data)
-                            print(
-                                f"ID: {object_data.get('objectID', 'N/A')}, Título: {object_data.get('title', 'Sin Título')}, Autor: {object_data.get('artistDisplayName', 'Desconocido')}")
-                    except requests.exceptions.RequestException:
-                        continue
-
-                if not filtered_objects_data:
-                    print(
-                        "No se encontraron obras con la nacionalidad especificada después de filtrar.")
-
-            else:
-                print("No se encontraron objetos para la nacionalidad seleccionada.")
-
-            while True:
-                ver_obra_id = input(
-                    "\n¿Desea ver los detalles de una obra? (Introduzca el ID o 'salir'):\n--> ")
-                if ver_obra_id.lower() == 'salir':
-                    break
+            print("""
+    Obras:
+    """)
+            for i in range(len(objects)):
 
                 try:
-                    object_link_to_view = f"{objects_link}/{ver_obra_id}"
-                    object_data_to_view = requests.get(object_link_to_view)
-                    object_data_to_view.raise_for_status()
-                    object_data_to_view = object_data_to_view.json()
+                    object_link = f"{objects_link}/{objects[i]}"
+                    object_data = requests.get(object_link)
+                    object_data = object_data.json()
 
-                    print(f"\nDetalles de la obra con ID {ver_obra_id}:")
-                    print(
-                        f"'{object_data_to_view.get('title', 'Sin Título')}' por {object_data_to_view.get('artistDisplayName', 'Desconocido')},")
-                    print(f"  {object_data_to_view.get('artistNationality', 'Desconocido')}, {object_data_to_view.get('artistBeginDate', 'Desconocido')} - {object_data_to_view.get('artistEndDate', 'Desconocido')}")
-                    print(
-                        f"  {object_data_to_view.get('classification', 'Desconocido')}, {object_data_to_view.get('objectDate', 'Desconocido')}")
-                    print(
-                        f"  URL de la imagen: {object_data_to_view.get('primaryImageSmall', 'No disponible')}")
+                    if nationality_input == object_data["artistNationality"]:
+                        print(f"{i+1}.- {object_data["objectID"]}, {object_data["title"]}, {object_data["artistDisplayName"]}")
+
+                except ValueError or KeyError or TypeError:
+                    print("No se pudo obtener este item")
 
                     while True:
-                        opcion_imagen = input(
-                            "\n¿Desea ver la imagen de la obra? (1. Sí, 2. No)\n--> ")
-                        if opcion_imagen == "1":
-                            url_imagen = object_data_to_view.get(
-                                "primaryImageSmall")
-                            if url_imagen:
-                                guardar_y_mostrar_imagen(
-                                    url_imagen, f"obra_{ver_obra_id}")
+                        print()
+                        seguir = input("""Quiere seguir mostrando obras?
+            1. Si
+            2. Ver obra
+            3. No
+        --> """)
+
+                        if seguir == "1":
+                            print()
+                            break
+
+                        elif seguir == "2":
+                            print()
+                            ver = input("""Introduzca el ID de la obra para ver su informacion:        
+        --> """)
+
+                            if int(ver) not in objects:
+                                print()
+                                print("La obra no esta en la lista")
                             else:
-                                print("No se encontró una imagen para esta obra.")
-                            break
-                        elif opcion_imagen == "2":
-                            break
+                                try:
+                                    object_link = f"{objects_link}/{ver}"
+                                    object_data = requests.get(object_link)
+                                    object_data = object_data.json()
+
+                                    print()
+
+                                    print(f"""'{object_data["title"]}' by {object_data["artistDisplayName"]},
+        {object_data["artistNationality"]}, {object_data["artistBeginDate"]} - {object_data["artistEndDate"]}
+        {object_data["classification"]}, {object_data["objectDate"]}
+        {object_data["primaryImageSmall"]}""")
+
+                                except ValueError or KeyError or TypeError:
+                                    print()
+                                    print("No se puede mostrar la obra en estos momentos, intente nuevamente")
+
+                                    while True:
+                                        try_again = input("""
+            1. Intentar de nuevo
+            2. Salir                
+        --> """)
+                                        if try_again == "1":
+                                            try:
+                                                object_link = f"{objects_link}/{ver}"
+                                                object_data = requests.get(object_link)
+                                                object_data = object_data.json()
+
+                                                print()
+                                                print(f"""'{object_data["title"]}' by {object_data["artistDisplayName"]},
+                    {object_data["artistNationality"]}, {object_data["artistBeginDate"]} - {object_data["artistEndDate"]}
+                    {object_data["classification"]}, {object_data["objectDate"]}
+                    {object_data["primaryImageSmall"]}""")
+                                                while True:
+                                                    image = input("""Desea ver la imagen?
+            1. Si
+            2. No
+        --> """)
+                                                    if image == "1":
+                                                        utils.guardar_y_mostrar_imagen(object_data["primaryImageSmall"],f"{object_data["objectID"]}")
+                                                        break
+
+                                                    elif image == "2":
+                                                        break
+                                                    else:
+                                                        print("Opcion Invalida")
+
+                                            except ValueError or KeyError or TypeError:
+                                                print()
+                                                print("No se puede mostrar la obra en estos momentos, intente nuevamente")
+                                        elif try_again == "2":
+                                            break
+                                        else:
+                                            print("Opcion invalida")
+
+                        elif seguir == "3":
+                            return
+
                         else:
-                            print("Opción inválida. Intente de nuevo.")
+                            print()
+                            print("Opcion invalida")
+            
+            print("")
+            print("Se han mostrado todos los objetos")
 
-                except requests.exceptions.RequestException:
-                    print(
-                        f"No se pudo encontrar o mostrar la obra con ID {ver_obra_id}.")
+            while True:
+                print()
+                ver = input("""Introduzca el ID de la obra para ver su informacion:        
+        --> """)
 
-        except requests.exceptions.RequestException:
-            print("Error con los servidores. No se pudo realizar la búsqueda.")
+                try:
+                    object_link = f"{objects_link}/{ver}"
+                    object_data = requests.get(object_link)
+                    object_data = object_data.json()
+
+                    print()
+                    print(f"""'{object_data["title"]}' by {object_data["artistDisplayName"]},
+        {object_data["artistNationality"]}, {object_data["artistBeginDate"]} - {object_data["artistEndDate"]}
+        {object_data["classification"]}, {object_data["objectDate"]}
+        {object_data["primaryImageSmall"]}""")
+
+                except ValueError or KeyError or TypeError:
+                    print()
+                    print("No se puede mostrar la obra en estos momentos, intente nuevamente")
+
+                    while True:
+                        try_again = input("""
+            1. Intentar de nuevo
+            2. Salir                 
+        --> """)
+                        if try_again == "1":
+                            try:
+                                object_link = f"{objects_link}/{ver}"
+                                object_data = requests.get(object_link)
+                                object_data = object_data.json()
+
+                                print()
+                                print(f"""'{object_data["title"]}' by {object_data["artistDisplayName"]},
+        {object_data["artistNationality"]}, {object_data["artistBeginDate"]} - {object_data["artistEndDate"]}
+        {object_data["classification"]}, {object_data["objectDate"]}
+        {object_data["primaryImageSmall"]}""")
+                                break
+
+                            except ValueError or KeyError or TypeError:
+                                print()
+                                print("No se puede mostrar la obra en estos momentos, intente nuevamente")
+                        elif try_again == "2":
+                            return
+                        else:
+                            print("Opcion invalida")
+            
+        except ValueError or KeyError or TypeError:
+            print("Error con los servidores")
+
+    search()
