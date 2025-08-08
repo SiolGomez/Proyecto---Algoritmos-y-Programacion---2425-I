@@ -14,39 +14,48 @@ class Departamento:
         objects_link = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
         search_link = "https://collectionapi.metmuseum.org/public/collection/v1/search"
         departments_link = "https://collectionapi.metmuseum.org/public/collection/v1/departments"
+        
+        try:
+            data = requests.get(departments_link)
+            data = data.json()
 
-        data = requests.get(departments_link)
-        data = data.json()
-
-       
-        print(f"Departamentos: ")
-        for departamento in data["departments"]:
-            print(f"    {departamento["departmentId"]} - {departamento["displayName"]}")
-            print()
-               
-            
-        while True: 
-
-            department_input = input("""Introduzca el nombre del departamento:
-            --> """)
- 
-
-            params = {
-                "q": department_input,
-                "hasImages": "true"
-            }
-
-            try:
-                data = requests.get(search_link,params=params)
-                data = data.json()
-
+            print(f"Departamentos: ")
+            for departamento in data["departments"]:
+                print(f"    {departamento["departmentId"]} - {departamento["displayName"]}")
                 print()
-                print(f"{data['total']} objetos encontrados")
+                
+        
+
+               
+           
+            while True: 
+
+                department_input = input("""Introduzca el ID del departamento:
+                --> """)
+    
+
+                params = {
+                    "q": "",
+                    "departmentId": int(department_input),
+                    "hasImages":"true"
+                }
+                try:
+                    data = requests.get(search_link,params=params)
+                    data = data.json()
+                except ValueError or KeyError or TypeError:
+
+                
+
+                    print()
+                    print(f"{data['total']} objetos encontrados")
 
                 objects = []
 
                 for id in data["objectIDs"]:
                     objects.append(id)
+
+                    
+                    
 
                 print("""
         Obras:
@@ -58,10 +67,9 @@ class Departamento:
                         object_data = requests.get(object_link)
                         object_data = object_data.json()
 
-                        if department_input == object_data["department"]:
-                            print(f"{i+1}.- {object_data["objectID"]}, {object_data["title"]}, {object_data["artistDisplayName"]}")
+                        print(f"{i+1}.- {object_data["objectID"]}, {object_data["title"]}, {object_data["artistDisplayName"]}")
 
-                    except ValueError:
+                    except ValueError or KeyError or TypeError:
                         print("No se pudo obtener este item")
 
                         while True:
@@ -93,7 +101,7 @@ class Departamento:
         {object_data["classification"]}, {object_data["objectDate"]}
         {object_data["primaryImageSmall"]}""")
 
-                                except ValueError:
+                                except ValueError or KeyError or TypeError:
                                     print()
                                     print("No se puede mostrar la obra en estos momentos, intente nuevamente")
 
@@ -115,7 +123,7 @@ class Departamento:
                     {object_data["primaryImageSmall"]}""")
                                                 break
 
-                                            except ValueError:
+                                            except ValueError or KeyError or TypeError:
                                                 print()
                                                 print("No se puede mostrar la obra en estos momentos, intente nuevamente")
                                         elif try_again == "2":
@@ -149,7 +157,7 @@ class Departamento:
             {object_data["classification"]}, {object_data["objectDate"]}
             {object_data["primaryImageSmall"]}""")
 
-                    except ValueError:
+                    except ValueError or KeyError or TypeError:
                         print()
                         print("No se puede mostrar la obra en estos momentos, intente nuevamente")
 
@@ -171,7 +179,7 @@ class Departamento:
             {object_data["primaryImageSmall"]}""")
                                     break
 
-                                except ValueError:
+                                except ValueError or KeyError or TypeError:
                                     print()
                                     print("No se puede mostrar la obra en estos momentos, intente nuevamente")
                             elif try_again == "2":
@@ -179,8 +187,10 @@ class Departamento:
                             else:
                                 print("Opcion invalida")
                 
-            except ValueError:
-                print("Error con los servidores")    
+        except ValueError or KeyError or TypeError:
+            print("Error con los servidores")
+
+    
 
     
 
