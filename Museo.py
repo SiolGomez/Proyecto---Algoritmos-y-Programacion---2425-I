@@ -1,21 +1,23 @@
 from Nacionalidad import Nacionalidad
 from Departamento import Departamento
+from Nombre import Nombre
 
 class Museo:
-    def __init__(self,db):
-        self.db = db
-
     def start(self):
+
+        """
+        Comienza la interfaz del museo en la terminal, el usuario luego debe elegir la opcion a utilizar
+        """
         
         while True:
             print()
             menu = input("""Bienvenido a MetroArt, elija una opcion:
                             
-        1. Ver lista de obras por Departamento 
-        2. Ver lista de obras por Nacionalidad del autor
-        3. Ver lista de obras por nombre del autor
-        4. Salir
-                            
+            1. Ver lista de obras por departamento 
+            2. Ver lista de obras por nacionalidad del autor
+            3. Ver lista de obras por nombre del autor
+            4. Salir
+                                
         --> """)
             
             if menu == "1":
@@ -28,16 +30,11 @@ class Museo:
 
             elif menu == "3":
                 print()
+                Nombre.search()
+
+            elif menu == "4":
+                break
 
             else:
                 print()
                 print("Opcion invalida")
-
-
-    def load_data(self):
-
-        self.objects = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
-        self.searchs = "https://collectionapi.metmuseum.org/public/collection/v1/search"
-        self.departments = "https://collectionapi.metmuseum.org/public/collection/v1/departments"
-
-        self.nationality = []
