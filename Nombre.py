@@ -33,6 +33,7 @@ class Nombre:
             print("""
     Obras:
     """)
+            
             for i in range(len(objects)):
 
                 try:
@@ -40,9 +41,9 @@ class Nombre:
                     object_data = requests.get(object_link)
                     object_data = object_data.json()
 
-                    if name_input == object_data["artistDisplayName"]:
-                        print(f"{i+1}.- {object_data['objectId']},{object_data['title']},{object_data['artistNationality']}")
-                except ValueError:
+                   
+                    print(f"{i+1}.- {object_data['objectID']},{object_data['title']},{object_data['artistDisplayName']}")
+                except ValueError or KeyError:
                     print("No se pudo obtener este item")
 
                     while True:
@@ -74,7 +75,7 @@ class Nombre:
     {object_data["classification"]}, {object_data["objectDate"]}
     {object_data["primaryImageSmall"]}""")
 
-                            except ValueError:
+                            except ValueError or KeyError:
                                 print()
                                 print("No se puede mostrar la obra en estos momentos, intente nuevamente")
 
@@ -96,7 +97,7 @@ class Nombre:
                 {object_data["primaryImageSmall"]}""")
                                             break
 
-                                        except ValueError:
+                                        except ValueError or KeyError:
                                             print()
                                             print("No se puede mostrar la obra en estos momentos, intente nuevamente")
                                     elif try_again == "2":
@@ -130,7 +131,7 @@ class Nombre:
         {object_data["classification"]}, {object_data["objectDate"]}
         {object_data["primaryImageSmall"]}""")
 
-                except ValueError:
+                except ValueError or KeyError:
                     print()
                     print("No se puede mostrar la obra en estos momentos, intente nuevamente")
 
@@ -152,7 +153,7 @@ class Nombre:
         {object_data["primaryImageSmall"]}""")
                                 break
 
-                            except ValueError:
+                            except ValueError or KeyError:
                                 print()
                                 print("No se puede mostrar la obra en estos momentos, intente nuevamente")
                         elif try_again == "2":
@@ -160,7 +161,7 @@ class Nombre:
                         else:
                             print("Opcion invalida")
             
-        except ValueError:
+        except ValueError or KeyError:
             print("Error con los servidores")    
 
     search()
