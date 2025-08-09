@@ -2,6 +2,7 @@ from utils import utils
 import requests
 
 class Departamento:
+    
     def search():
 
         """
@@ -48,9 +49,12 @@ class Departamento:
                     data = requests.get(search_link,params=params)
                     data = data.json()
 
-                except (ValueError, KeyError, TypeError):
                     print()
                     print(f"{data['total']} objetos encontrados")
+
+                except (ValueError, KeyError, TypeError):
+                    print()
+                    print("No se puede establecer conexion con el servidor")
 
                 objects = []
 
@@ -113,7 +117,7 @@ Obras:
                                     while True:
                                         try_again = input("""
             1. Intentar de nuevo
-            2. Salir                
+            2. Volver                
         --> """)
                                         if try_again == "1":
                                             continue
@@ -177,7 +181,7 @@ Obras:
                         while True:
                             try_again = input("""
             1. Intentar de nuevo
-            2. Salir                 
+            2. Volver                 
         --> """)
                             if try_again == "1":
                                 try:
@@ -212,9 +216,7 @@ Obras:
                                 return
                             else:
                                 print("Opcion invalida")
-                else:
-                    break
                 
         except (ValueError, KeyError, TypeError):
+            print()
             print("Error con los servidores")
-                    

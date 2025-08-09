@@ -13,16 +13,33 @@ class Nacionalidad:
         objects_link = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
         search_link = "https://collectionapi.metmuseum.org/public/collection/v1/search"
 
-        print("""
-Nacionalidades:
-""")
-
-        for nationality in db:
-            print(f"        {nationality}")
-
         while True:
             print()
+            opcion = input("""Escoja la inicial de la nacionalidad para mostrar las opciones
+        1. A-I
+        2. J-R
+        3. S-Z
+    --> """)
+            if opcion not in ("1","2","3"):
+                print()
+                print("Elija una opcion valida")
+                continue
 
+            print()
+            for nationality in db:
+                inicial = nationality[0].upper()
+
+                if opcion == "1":
+                    if "A" <= inicial <= "I":
+                        print(f"        {nationality}")
+                elif opcion == "2":
+                    if "J" <= inicial <= "R":
+                        print(f"        {nationality}")
+                elif opcion == "3":
+                    if "S" <= inicial <= "Z":
+                        print(f"        {nationality}")
+
+            print()
             nationality_input = input("""Introduzca la nacionalidad:
         --> """)
 
@@ -124,7 +141,7 @@ Obras:
                                     while True:
                                         try_again = input("""
             1. Intentar de nuevo
-            2. Salir                
+            2. Volver                
         --> """)
                                         if try_again == "1":
                                             try:
@@ -214,7 +231,7 @@ Obras:
                     while True:
                         try_again = input("""
             1. Intentar de nuevo
-            2. Salir                 
+            2. Volver                 
         --> """)
                         if try_again == "1":
                             try:
@@ -253,4 +270,5 @@ Obras:
                             print("Opcion invalida")
             
         except (ValueError, KeyError, TypeError):
+            print()
             print("Error con los servidores")

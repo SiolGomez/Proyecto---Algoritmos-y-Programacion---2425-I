@@ -100,7 +100,7 @@ Obras:
                                 while True:
                                     try_again = input("""
             1. Intentar de nuevo
-            2. Salir                
+            2. Volver                
         --> """)
                                     if try_again == "1":
                                         try:
@@ -186,7 +186,7 @@ Obras:
                     while True:
                         try_again = input("""
             1. Intentar de nuevo
-            2. Salir                 
+            2. Volver                 
         --> """)
                         if try_again == "1":
                             try:
@@ -223,4 +223,5 @@ Obras:
                             print("Opcion invalida")
             
         except (ValueError, KeyError, TypeError):
+            print()
             print("Error con los servidores")
